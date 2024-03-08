@@ -1,6 +1,4 @@
-﻿using Labb1SQL.Data;
-using Labb1SQL.Models;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
@@ -112,7 +110,7 @@ namespace Labb1SQL
 
                     using (SqlCommand command = new SqlCommand(studentQuery, connection))
                     {
-                        using SqlDataReader reader = command.ExecuteReader(){
+                        using (SqlDataReader reader = command.ExecuteReader()){
 
                             Console.Clear();
                             Console.WriteLine("List of all students:\n");
@@ -259,7 +257,7 @@ namespace Labb1SQL
                             Console.WriteLine("List of all staff: ");
                             while (reader.Read())
                             {
-                                Console.WriteLine($"{reader["StaffID"]}, {reader["LastName"]}, {reader["Employment"]}";
+                                Console.WriteLine($"{reader["StaffID"]}, {reader["LastName"]}, {reader["Employment"]}");
                             }
                         }
                     }
@@ -376,7 +374,34 @@ namespace Labb1SQL
                 {
                     connection.Open();
 
-                    string insertQuery
+                    string insertQuery = "INSERT INTO Students (FirstName, LastName, Age, ClassID) " +
+                                         "VALUES (@FirstName, @LastName, @Age, @ClassID";
+
+                    using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@FirstName", studentFirstName);
+                        command.Parameters.AddWithValue("@LastName", studentLastName);
+                        command.Parameters.AddWithValue("@Age", studentAge);
+                        command.Parameters.AddWithValue("@ClassID", classID);
+
+                        try
+                        {
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                Console.WriteLine("Student added!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Failed to add new student, try again!");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
+                    }
                 }
 
             }
